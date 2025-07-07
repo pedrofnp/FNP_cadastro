@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Mapa das Regiões do Brasil</title>
+    <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+    <style>
+        #container {
+            height: 600px;
+            width: 800px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // GeoJSON e dados passados do Django
+            const mapaBrasil = JSON.parse('{{ mapa_brasil|safe }}');
+            const dadosRegioes = JSON.parse('{{ dados_regioes|safe }}');
+            
+            // Configuração do Highcharts
+            Highcharts.mapChart('container', {
+                chart: {
+                    map: mapaBrasil
+                },
+                title: {
+                    text: 'Mapa das Regiões do Brasil'
+                },
+                colorAxis: {
+                    minColor: '#E6E7E8',
+                    maxColor: '#005645'
+                },
+                series: [{
+                    data: dadosRegioes.map(d => ({
+                        'NOME1': d.nome,  // Usar o campo correto para correspondência
+                        'value': d.valor,
+                        'name': d.nome
+                    })),
+                    mapData: mapaBrasil,
+                    joinBy: ['NOME1', 'NOME1'],  // Referenciar corretamente o campo no GeoJSON
+                    name: 'Valores das Regiões',
+                    states: {
+                        hover: {
+                            color: '#BADA55'
+                        }
+                    },
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.name}: {point.value}'
+                    }
+                }]
+            });
+        });
+    </script>
+</body>
+</html>

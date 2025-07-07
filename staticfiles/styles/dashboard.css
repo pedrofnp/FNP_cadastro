@@ -1,0 +1,82 @@
+.bi {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+}
+
+/*
+ * Sidebar
+ */
+
+@media (min-width: 768px) {
+  .sidebar .offcanvas-lg {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 48px;
+  }
+  .navbar-search {
+    display: block;
+  }
+}
+
+.sidebar .nav-link {
+  font-size: .875rem;
+  font-weight: 500;
+}
+
+.sidebar .nav-link.active {
+  color: #2470dc;
+}
+
+.sidebar-heading {
+  font-size: .75rem;
+}
+
+/*
+ * Navbar
+ */
+
+.navbar-brand {
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  background-color: rgba(0, 0, 0, .25);
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+}
+
+.navbar .form-control {
+  padding: .75rem 1rem;
+}
+html, body {
+  height: 100%; /* Garante que o corpo da página ocupe 100% da altura */
+  margin: 0; /* Remove margens padrão */
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Permite que a tabela ocupe 100% da altura */
+}
+
+.table-responsive {
+  flex: 1; /* Faz a tabela ocupar todo o espaço disponível */
+  overflow-y: auto; /* Habilita a rolagem vertical */
+}
+
+.table {
+  width: 100%; /* Garante que a tabela ocupe 100% da largura */
+  border-collapse: collapse; /* Para evitar espaços indesejados */
+}
+
+.table thead th {
+  position: sticky; /* Fixa o cabeçalho */
+  padding: 0.3em;
+  top: 0; /* Define que o cabeçalho ficará no topo */
+  background-color: white; /* Cor do fundo do cabeçalho */
+  z-index: 10; /* Garante que o cabeçalho fique acima do corpo da tabela */
+  border: 1px solid #dee2e6; /* Adiciona uma borda ao cabeçalho */
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #dee2e6; /* Adiciona uma borda entre as linhas do corpo */
+
+}
