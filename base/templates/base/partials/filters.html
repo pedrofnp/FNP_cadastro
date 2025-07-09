@@ -48,7 +48,7 @@
       </div>
 
       <div class="col-md-3">
-          <select class="form-select" name="tipo_municipio" multiple>
+          <select class="form-select" name="tipo_municipio">
               <option value="capitais" {% if request.GET.tipo_municipio == "capitais" %}selected{% endif %}>Capitais</option>
               <option value="mais_de_80_mil" {% if request.GET.tipo_municipio == "mais_de_80_mil" %}selected{% endif %}>Mais de 80 mil habitantes</option>
               <option value="menos_de_80_mil" {% if request.GET.tipo_municipio == "menos_de_80_mil" %}selected{% endif %}>Menos de 80 mil habitantes</option>

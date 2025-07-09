@@ -1,101 +1,83 @@
-# 📇 Projeto Django - Sistema de Contatos FNP
+# FNP Cadastro
 
-Sistema para cadastro, filtragem e gerenciamento de contatos (prefeituras e representantes), com base nos dados da Frente Nacional de Prefeitas e Prefeitos (FNP).
-
----
-
-## 🚀 Tecnologias Utilizadas
-
-- Python 3.13
-- Django 5.2
-- Bootstrap 5
-- Select2 (filtros avançados)
-- SQLite (padrão)
-- JavaScript / JQuery
+Sistema de gerenciamento de contatos voltado para a Frente Nacional de Prefeitos (FNP).  
+Permite controle de registros, exportações CSV, autenticação de usuários e painel administrativo com filtros por município e estado.
 
 ---
 
-## 📦 Estrutura do Projeto
+## ⚙️ Requisitos
 
-contatos/
-├── base/
-│ ├── templates/base
-│ │ ├── dash.html
-│ │ └── partials/
-│ │ │ ├── filters.html
-│ │ │ └── table.html
-│ ├── static/
-│ │ ├── js/
-│ │ └── styles/
-│ ├── views.py
-│ ├── models.py
-│ ├── urls.py
-│ └── forms.py
-├── media/
-│ └── fotos_perfil/
-├── manage.py
-└── db.sqlite3
-
-## 📌 Funcionalidades
-
-- Cadastro completo de contatos (nome, email, telefone, cargo, estado, município, partido, etc.)
-- Upload de foto
-- Sistema de filtros combinados (por estado, município, capital, interesse, etc.)
-- Paginação dos resultados
-- Edição e exportação de dados
-- Integração com biblioteca Select2 para multiselect com Bootstrap 5
-- Responsividade com Bootstrap
+- Python 3.8+
+- Django 4.x ou 5.x
+- SQLite3 (ou outro banco Django compatível)
 
 ---
 
-## 🛠️ Como Rodar Localmente
+## 🚀 Como rodar localmente
 
-1. Clone o Projeto
+# Clone o projeto
+git clone https://github.com/seu-usuario/FNP_cadastro.git
+cd FNP_cadastro
 
-   ```bash
-   git clone https://github.com/usuario/repositorio.git
-   cd repositorio
+# Crie um ambiente virtual
+python -m venv venv
+source venv/bin/activate        # ou venv\Scripts\activate no Windows
 
-   ```
+# Instale as dependências
+pip install -r requirements.txt
 
-2. Crie e ative um ambiente virtual
-   bash
-   Copiar código
-   python -m venv venv
-   source venv/bin/activate # Linux/Mac
-   venv\Scripts\activate # Windows
+# Crie o banco e migre
+python manage.py migrate
 
-3. Instale as dependências
-   pip install -r requirements.txt
+# Crie o superusuário
+python manage.py createsuperuser
 
-4. Rode o servidor
-   python manage.py runserver
+# Rode o servidor local
+python manage.py runserver
 
-5. Acesse: http://127.0.0.1:8000/
+---
 
- ## 📂 Organização dos Templates
-    dash.html: página principal com layout e carregamento de componentes
+## 🗂️ Estrutura
+base/                    # App principal
+│
+├── static/              # JS, CSS e imagens
+│   └── js/
+│   └── css/
+│
+├── templates/base/      # dash.html, etc.            
+│       └── partials/    # navbar, sidebar, etc.
+|
+├── views.py             # Lógica das páginas
+├── urls.py              # Rotas
+├── forms.py             # Formulários
+├── models.py            # Modelos
 
-    partials/filters.html: formulário de filtros
+---
 
-    partials/table.html: listagem com paginação
+## 📁 Funcionalidades
 
- ## 📂 Organização dos Arquivos Estáticos
-    static/js/: JavaScript modular (dashboard.js, filtros, AJAX, etc.)
+Login/logout de usuários
+Cadastro e edição de contatos
+Dashboard com filtros por estado e município
+Exportação de dados em CSV
+Integração com Select2
+Scripts separados em static/js/
+CSS separados em static/css/
 
-    static/styles/: CSS customizados (sidebars, bootstrap, filtros)
+---
 
-    static/images/: imagens e ícones
+## 💡 Boas práticas utilizadas
 
-    Todos os arquivos estáticos são incluídos nos templates com {% load static %} e src="{% static 'caminho/do/arquivo' %}".
+Organização dos templates com partials/
+Separação de static/ por tipo
+Views organizadas em funções nomeadas
+URLs com name= para uso nos templates
+Uso de variáveis de contexto em todas as views
 
- ##  🔍 Observações
-    O CSS e JS foram corretamente separados em arquivos externos.
+---
 
-    O campo de municípios é populado dinamicamente via fetch() a partir do estado_id.
+## 🛡️ Git
 
-    Projeto está em processo de refatoração com foco em boas práticas, organização e manutenção futura.
-
-  ##  ⚖️ Licença
-
-Todos os direitos reservados à Frente Nacional de Prefeitas e Prefeitos (FNP).
+Branch principal: master
+Branch de desenvolvimento: dev
+Use git checkout -b minha-feature para criar uma nova branch
