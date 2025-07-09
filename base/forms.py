@@ -8,8 +8,10 @@ class ContactForm(forms.ModelForm, forms.Form):
         interesses = forms.ModelMultipleChoiceField(
         queryset=Interesse.objects.all(),  # Puxa todos os interesses do banco de dados
         widget=forms.SelectMultiple(attrs={'class': 'form-control'}),  # Lista suspensa múltipla
-        required=False  # Campo não obrigatório
+        required=False,  # Campo não obrigatório
+        help_text=''
         )
+
         class Meta:
             model = Contato
             fields = ['nome',  'cargo', 'entidade', 'partido' ,'interesses' , 'estado', 'municipio', 'observacoes', 'foto']
