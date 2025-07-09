@@ -2,15 +2,16 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
 
 urlpatterns = [
     
-    path('', views.homePage, name='home'),
-    path('home/', views.homePage, name='home'),
+    path('', RedirectView.as_view(url='/cadastrar/', permanent=False)),
+    path('cadastrar/', views.cadastrarPage, name='cadastrar'),
     path('login/', views.loginPage, name='login'),
     path('logout/', views.logoutUser, name='logout'),
     path('get-municipios/<int:estado_id>/', views.get_municipios, name='get_municipios'),
-    path('dash/', views.dashPage, name='dash'),
+    path('procurar/', views.dashPage, name='procurar'),
     path('editar-contato/<int:contato_id>/', views.editar_contato, name='editar_contato'),
     path('exportar-estados-csv/', views.exportar_estados_csv, name='exportar_estados_csv'),
     path('exportar-cargos-csv/', views.exportar_cargos_csv, name='exportar_cargos_csv'),

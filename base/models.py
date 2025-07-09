@@ -30,6 +30,12 @@ class Municipio(models.Model):
     nome_metropolitana = models.CharField(max_length=100, null=True)
     nome_regiao = models.CharField(max_length=100 , null = False)
     
+   # Controle de adimplência do município
+    adimplente = models.BooleanField(
+        default=False,
+        verbose_name="Município Adimplente"
+    )    
+
     def __str__(self):
         return f"{self.nome} - {self.estado.nome}"
 
@@ -56,7 +62,7 @@ class Contato(models.Model):
     nome = models.CharField(max_length=100)
     cargo = models.ForeignKey(Cargo, on_delete=models.SET_NULL, null=True)
     estado = models.ForeignKey(Estado, on_delete=models.SET_NULL, null=True)
-    municipio = models.ForeignKey(Municipio, on_delete=models.SET_NULL, null=True)
+    municipio = models.ForeignKey(Municipio, on_delete=models.PROTECT)
     observacoes = models.TextField(blank=True, null=True)  # Campo para observações
     foto = models.ImageField(upload_to='fotos_perfil/', blank=True, null=True)  # Campo para upload de fotos
     foto_url = models.URLField(max_length=300, blank=True, null=True)  # Campo para link da imagem

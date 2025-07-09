@@ -6,35 +6,40 @@
 <!-- Tabela -->
 <div class="table-responsive">
   <table class="table table-hover">
-      <thead>
-          <tr>
-              <th>Nome</th>
-              <th>Cargo</th>
-              <th>Email</th>
-              <th>Interesse</th>
-              <th>Status</th>
-              <th>Ações</th>
-          </tr>
-      </thead>
-      <tbody>
-        {% for contato in contatos %}
-          <tr>
-              <td>{{ contato.nome }}</td>
-              <td>{{ contato.cargo }}</td>
-              <td>{{ contato.email }}</td>
-              <td>{{ contato.interesse }}</td>
-              <td>{{ contato.status }}</td>
-              <td>
-                <a href="{% url 'editar_contato' contato.id %}" class="btn btn-sm btn-outline-primary">Editar</a>  
-                <button class="btn btn-sm btn-outline-danger">Excluir</button>
-              </td>
-          </tr>
-        {% empty %}
-          <tr>
-              <td colspan="6" class="text-center">Nenhum contato encontrado.</td>
-          </tr>
-        {% endfor %}
-      </tbody>
+    <thead class="table-light">
+      <tr>
+        <th>Município</th>
+        <th>Nome</th>
+        <th>Cargo</th>
+        <th>Adimplente</th>
+        <th>Consulta</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for contato in contatos %}
+        <tr>
+          <td>{{ contato.municipio.nome }}</td>
+          <td>{{ contato.nome }}</td>
+          <td>{{ contato.cargo.nome }}</td>
+          <td class="text-center">
+            {% if contato.municipio.adimplente %}
+              ✅
+            {% else %}
+              ❌
+            {% endif %}
+          </td>
+          <td class="text-center">
+            <a href="{% url 'consulta' contato.id %}" title="Ver detalhes">
+              <i class="bi bi-info-circle-fill"></i>
+            </a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="5" class="text-center">Nenhum contato encontrado.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
   </table>
 </div>
 
@@ -72,3 +77,5 @@
     {% endif %}
   </ul>
 </nav>
+<!-- Fim da tabela -->
+<!-- Fim da filtragem -->

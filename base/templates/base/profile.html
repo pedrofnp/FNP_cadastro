@@ -109,15 +109,16 @@
     <hr>
     <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item">
-        <a href="{% url 'home' %}" class="nav-link text-black" aria-current="page">
-          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#home"/></svg>
-          Home
+        <a href="{% url 'cadastrar' %}" class="nav-link {% if request.path == '/cadastrar/' %}active{% else %}text-black{% endif %}" aria-current="page">
+          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"/></svg>
+          Cadastrar
         </a>
+
       </li>
       <li>
-        <a href="{% url 'dash' %}" class="nav-link text-black">
+        <a href="{% url 'procurar' %}" class="nav-link text-black">
           <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
-          Dashboard
+          Procurar
         </a>
       </li>
 

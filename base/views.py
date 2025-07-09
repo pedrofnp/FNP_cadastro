@@ -20,7 +20,7 @@ def loginPage(request):
 
 
     if request.user.is_authenticated: 
-        return redirect('home')
+        return redirect('cadastrar')
 
 
     if request.method == 'POST':
@@ -36,7 +36,7 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect('cadastrar')  # Redireciona para a página de cadastro após o login bem-sucedido
         else:
             messages.error(request, 'Username OR password does not exist')
     
@@ -49,7 +49,7 @@ def logoutUser(request):
     return redirect('login')
 
 @login_required(login_url= 'login')
-def homePage(request):
+def cadastrarPage(request):
     estados = Estado.objects.all().order_by('nome')  # Busca todos os estados do banco de dados
     partidos = Partido.objects.all().order_by('nome')
     cargos = Cargo.objects.all()
@@ -80,7 +80,7 @@ def homePage(request):
                 if telephone:  # Evita salvar campos vazios
                     Telephone.objects.create(contact=contact, telephone=telephone)
 
-            return redirect('home')  # Redireciona para uma página de sucesso ou lista de contatos
+            return redirect('cadastrar')  # Redireciona para uma página de sucesso ou lista de contatos
 
     else:
         contact_form = ContactForm()
@@ -91,14 +91,14 @@ def get_municipios(request, estado_id):
     # Busca os municípios relacionados ao estado_id
     municipios = Municipio.objects.filter(estado_id=estado_id).values('id', 'nome')
     
-    # Verifique o formato solicitado na URL (ex: ?format=dash ou ?format=home)
-    format_type = request.GET.get('format', 'home')  # Valor padrão é 'home'
+    # Verifique o formato solicitado na URL (ex: ?format=procurar ou ?format=cadastrar)
+    format_type = request.GET.get('format', 'cadastrar')  # Valor padrão é 'cadastrar'
 
-    # Resposta específica para o formato 'dash'
-    if format_type == 'dash':
+    # Resposta específica para o formato 'procurar'
+    if format_type == 'procurar':
         return JsonResponse(list(municipios), safe=False)
 
-    # Resposta padrão para o formato 'home'
+    # Resposta padrão para o formato 'cadastrar'
     return JsonResponse({'municipios': list(municipios)}, safe=False)
 
 
@@ -157,7 +157,7 @@ def dashPage(request):
         'regioes_disponiveis': regioes_disponiveis,
     }
 
-    return render(request, 'base/dash.html', context)
+    return render(request, 'base/procurar.html', context)
 
 @login_required(login_url='login')
 def editar_contato(request, contato_id):
@@ -217,7 +217,7 @@ def editar_contato(request, contato_id):
         
 
         contato.save()  # Salva as mudanças
-        return redirect('dash')  # Redireciona de volta para o dashboard
+        return redirect('procurar')  # Redireciona de volta para o procurar
 
     # Carrega todos os estados
     estados_disponiveis = Estado.objects.all().order_by('nome')
@@ -278,7 +278,7 @@ def edit_profile(request, contato_id):
         contato.interesses.set(interesses_ids)  # Define os interesses
         contato.save()
         contato.save()  # Salva as mudanças
-        return redirect('dash')  # Redireciona de volta para o dashboard
+        return redirect('procurar')  # Redireciona de volta para o procurar
 
     # Carrega todos os estados
     estados_disponiveis = Estado.objects.all().order_by('nome')
@@ -300,9 +300,6 @@ def edit_profile(request, contato_id):
 
 
 
-
-def home(request):
-    return HttpResponse("Home page")
 
 @login_required(login_url='login')
 def exportar_estados_csv(request):
