@@ -9,6 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Procurar</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/docsearch.js@3/dist/cdn/docsearch.min.css" rel="stylesheet"
     <link href="https://cdn.jsdelivr.net/npm/@docsearch/css@3" rel="stylesheet">
     <link href="{% static 'styles/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'styles/sidebars.css' %}" rel="stylesheet">
@@ -29,7 +31,7 @@
       {% include "base/partials/filters.html" %}
 
       <!-- Tabela de contatos -->
-      {% include "base/partials/table.html" %}
+      {% include "base/partials/table.html" with request=request %}
 
     </main>
 

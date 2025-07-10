@@ -13,6 +13,9 @@
         <th>Cargo</th>
         <th>Adimplente</th>
         <th>Consulta</th>
+        {% if request.user.is_superuser %}
+        <th>Editar</th>
+        {% endif %}
       </tr>
     </thead>
     <tbody>
@@ -33,15 +36,23 @@
               <i class="bi bi-info-circle-fill"></i>
             </a>
           </td>
+          {% if request.user.is_superuser %}
+          <td class="text-center">
+            <a href="{% url 'consulta' contato.id %}?edit=1" title="Editar">
+              <i class="bi bi-pencil-fill"></i>
+            </a>
+          </td>
+          {% endif %}
         </tr>
       {% empty %}
         <tr>
-          <td colspan="5" class="text-center">Nenhum contato encontrado.</td>
+          <td colspan="6" class="text-center">Nenhum contato encontrado.</td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+<p>Usuário: {{ request.user.username }} | Superuser: {{ request.user.is_superuser }}</p>
 
 <!-- Paginação -->
 <nav aria-label="Navegação de página">
@@ -57,9 +68,7 @@
 
     {% for num in contatos.paginator.page_range %}
       {% if contatos.number == num %}
-        <li class="page-item active">
-          <span class="page-link">{{ num }}</span>
-        </li>
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
       {% elif num > contatos.number|add:'-3' and num < contatos.number|add:'3' %}
         <li class="page-item">
           <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
@@ -72,10 +81,5 @@
         <a class="page-link" href="?page={{ contatos.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Próxima</a>
       </li>
       <li class="page-item">
-        <a class="page-link" href="?page={{ contatos.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Última</a>
-      </li>
+        <a class="page-link" href="?page={{ contatos.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Últim_
     {% endif %}
-  </ul>
-</nav>
-<!-- Fim da tabela -->
-<!-- Fim da filtragem -->
