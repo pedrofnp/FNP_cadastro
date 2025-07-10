@@ -23,9 +23,16 @@
     {% include 'base/sidebar.html' %}
   </div>
 
-  <main class="container-fluid col-md-10 ms-sm-auto px-md-4 py-4">
-    {% block content %}{% endblock %}
+  <!-- Botão hamburguer visível só em telas pequenas -->
+  <button id="sidebarToggle" class="btn btn-outline-secondary d-lg-none m-3">
+    <i class="bi bi-list"></i>
+  </button>
+
+  <main class="main-content">
+    {% block content %}
+    {% endblock %}
   </main>
+
 
   <!-- Scripts -->
   <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
@@ -34,5 +41,6 @@
   <script src="{% static 'js/sidebars.js' %}"></script>
   <script src="{% static 'js/checkout.js' %}"></script>
   <script src="{% static 'js/form-contato.js' %}"></script>
+  <script src="{% static 'js/base.js' %}"></script>
 </body>
 </html>
