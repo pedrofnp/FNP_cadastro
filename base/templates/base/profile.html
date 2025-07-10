@@ -1,5 +1,4 @@
 {% load static %}
-
 <!doctype html>
 <html lang="pt-br" data-bs-theme="auto">
   <head>
@@ -12,8 +11,7 @@
   </head>
 
   <body>
-      <div class="container">
-
+    <div class="container">
       {% if messages %}
         {% for message in messages %}
           <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -22,23 +20,26 @@
           </div>
         {% endfor %}
       {% endif %}
-    
 
       <h2 class="mb-4 text-center">Perfil de {{ contato.nome }}</h2>
       <hr>
 
       <div class="row">
-        <!-- Lado esquerdo -->
+        <!-- COLUNA ESQUERDA -->
         <div class="col-md-4 text-center">
-        {% if contato.foto and contato.foto.name and contato.foto.url %}
-        <img class="rounded-circle mb-3" width="150px" height="150px" src="{{ contato.foto.url }}" alt="Foto do contato">
-        {% else %}
-        <img class="rounded-circle mb-3" width="150px" height="150px" src="https://ui-avatars.com/api/?name={{ contato.nome|urlencode }}&background=random" alt="Foto padrão">
-        {% endif %}
+        {% if foto_existe %}
+  <img class="rounded-circle mb-3" width="150px" height="150px" src="{{ contato.foto.url }}" alt="Foto do contato">
+{% else %}
+  <img class="rounded-circle mb-3" width="150px" height="150px" src="https://ui-avatars.com/api/?name={{ contato.nome|urlencode }}&background=random" alt="Foto padrão">
+{% endif %}
 
 
 
-
+          {% if edit_mode %}
+            <div class="mb-3">
+              <input type="file" name="foto" class="form-control">
+            </div>
+          {% endif %}
 
           <div class="mt-2">
             <span class="badge {% if contato.municipio and contato.municipio.adimplente %}bg-success{% else %}bg-danger{% endif %}">
@@ -72,7 +73,7 @@
           </div>
         </div>
 
-        <!-- Lado direito -->
+        <!-- COLUNA DIREITA -->
         <div class="col-md-8">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Detalhes do Contato</h4>
@@ -89,13 +90,21 @@
           </div>
 
           {% if edit_mode %}
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
               {% csrf_token %}
               <div class="row">
                 <div class="col-md-6 mb-2"><label>Nome</label><input name="nome" class="form-control" value="{{ contato.nome }}"></div>
-                <div class="col-md-6 mb-2"><label>Email</label><input name="email" class="form-control" value="{{ contato.email }}"></div>
-                <div class="col-md-6 mb-2"><label>Celular</label><input name="celular" class="form-control" value="{{ contato.celular }}"></div>
-                <div class="col-md-6 mb-2"><label>Telefone</label><input name="telefone" class="form-control" value="{{ contato.telefone }}"></div>
+
+                <div class="col-md-6 mb-2">
+                  <label>Cargo</label>
+                  <select name="cargo" class="form-select">
+                    <option value="">Escolha o Cargo</option>
+                    {% for cargo in cargos %}
+                      <option value="{{ cargo.id }}" {% if contato.cargo and contato.cargo.id == cargo.id %}selected{% endif %}>{{ cargo.nome }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
                 <div class="col-md-6 mb-2"><label>Instituição</label><input name="entidade" class="form-control" value="{{ contato.entidade }}"></div>
 
                 <div class="col-md-6 mb-2">
@@ -103,9 +112,7 @@
                   <select name="partido" class="form-select">
                     <option value="">---</option>
                     {% for partido in partidos %}
-                      <option value="{{ partido.id }}" {% if contato.partido and contato.partido.id == partido.id %}selected{% endif %}>
-                        {{ partido.nome }}
-                      </option>
+                      <option value="{{ partido.id }}" {% if contato.partido and contato.partido.id == partido.id %}selected{% endif %}>{{ partido.nome }}</option>
                     {% endfor %}
                   </select>
                 </div>
@@ -115,9 +122,7 @@
                   <select name="estado" class="form-select">
                     <option value="">---</option>
                     {% for estado in estados %}
-                      <option value="{{ estado.id }}" {% if contato.estado and contato.estado.id == estado.id %}selected{% endif %}>
-                        {{ estado.nome }}
-                      </option>
+                      <option value="{{ estado.id }}" {% if contato.estado and contato.estado.id == estado.id %}selected{% endif %}>{{ estado.nome }}</option>
                     {% endfor %}
                   </select>
                 </div>
@@ -127,49 +132,60 @@
                   <select name="municipio" class="form-select">
                     <option value="">---</option>
                     {% for municipio in municipios %}
-                      <option value="{{ municipio.id }}" {% if contato.municipio and contato.municipio.id == municipio.id %}selected{% endif %}>
-                        {{ municipio.nome }}
-                      </option>
+                      <option value="{{ municipio.id }}" {% if contato.municipio and contato.municipio.id == municipio.id %}selected{% endif %}>{{ municipio.nome }}</option>
                     {% endfor %}
                   </select>
                 </div>
 
-                <div class="col-12 mt-3">
+                <div class="col-md-6 mb-2">
+                  <label>E-mail Principal</label>
+                  {% if emails %}
+                    <input type="email" class="form-control" name="email_{{ emails.0.id }}" value="{{ emails.0.email }}">
+                  {% else %}
+                    <input type="email" class="form-control" name="email_novo" placeholder="email@exemplo.com">
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6 mb-2">
+                  <label>Telefone Principal</label>
+                  {% if telefones %}
+                    <input type="text" class="form-control" name="telefone_{{ telefones.0.id }}" value="{{ telefones.0.telephone }}">
+                  {% else %}
+                    <input type="text" class="form-control" name="telefone_novo" placeholder="(99) 99999-9999">
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6 mb-2">
+                  <label>E-mails Adicionais</label>
+                  <input type="email" name="additional_emails" class="form-control mb-1">
+                  <input type="email" name="additional_emails" class="form-control mb-1">
+                </div>
+
+                <div class="col-md-6 mb-2">
+                  <label>Telefones Adicionais</label>
+                  <input type="text" name="additional_telephones" class="form-control mb-1">
+                  <input type="text" name="additional_telephones" class="form-control mb-1">
+                </div>
+
+                <div class="col-12 mb-3 mt-3">
+                  <label for="observacoes">Histórico</label>
+                  <textarea name="observacoes" class="form-control" rows="4">{{ contato.observacoes }}</textarea>
+                </div>
+
+                <div class="col-12 mt-2 text-end">
                   <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                 </div>
               </div>
             </form>
           {% else %}
+            <!-- VISUALIZAÇÃO (não-editável) -->
             <div class="row">
               <div class="col-md-6 mb-2"><strong>Nome:</strong> {{ contato.nome }}</div>
-              <div class="col-md-6 mb-2"><strong>Email:</strong> {{ contato.email }}</div>
-              <div class="col-md-6 mb-2"><strong>Celular:</strong> {{ contato.celular }}</div>
-              <div class="col-md-6 mb-2"><strong>Telefone:</strong> {{ contato.telefone }}</div>
               <div class="col-md-6 mb-2"><strong>Instituição:</strong> {{ contato.entidade }}</div>
-
-              <div class="col-md-6 mb-2"><strong>Partido:</strong>
-                {% if contato.partido %}
-                  {{ contato.partido.nome }}
-                {% else %}
-                  —
-                {% endif %}
-              </div>
-
-              <div class="col-md-6 mb-2"><strong>Estado:</strong>
-                {% if contato.estado %}
-                  {{ contato.estado.nome }}
-                {% else %}
-                  —
-                {% endif %}
-              </div>
-
-              <div class="col-md-6 mb-2"><strong>Município:</strong>
-                {% if contato.municipio %}
-                  {{ contato.municipio.nome }}
-                {% else %}
-                  —
-                {% endif %}
-              </div>
+              <div class="col-md-6 mb-2"><strong>Partido:</strong> {{ contato.partido.nome|default:"—" }}</div>
+              <div class="col-md-6 mb-2"><strong>Estado:</strong> {{ contato.estado.nome|default:"—" }}</div>
+              <div class="col-md-6 mb-2"><strong>Município:</strong> {{ contato.municipio.nome|default:"—" }}</div>
+              <div class="col-md-6 mb-2"><strong>Histórico:</strong><br> {{ contato.observacoes|default:"—" }}</div>
             </div>
           {% endif %}
         </div>

@@ -148,7 +148,12 @@ def consulta(request, contato_id):
     municipios = Municipio.objects.filter(estado=contato.estado) if contato.estado else Municipio.objects.none()
     partidos = Partido.objects.all().order_by('nome')
     interesses = Interesse.objects.all()
+    emails = Email.objects.filter(contact=contato)
+    telefones = Telephone.objects.filter(contact=contato)
+    # Verifica se a foto existe fisicamente no disco
+    foto_existe = contato.foto and contato.foto.name and contato.foto.storage.exists(contato.foto.name)
 
+  
     return render(request, 'base/profile.html', {
         'contato': contato,
         'edit_mode': edit_mode,
@@ -157,6 +162,9 @@ def consulta(request, contato_id):
         'municipios': municipios,
         'partidos': partidos,
         'interesses': interesses,
+        'emails': emails,
+        'telefones': telefones,
+        'foto_existe': foto_existe,
     })
 
 
