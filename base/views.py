@@ -13,6 +13,7 @@ import os
 from django.conf import settings
 
 
+
 def loginPage(request):
     if request.user.is_authenticated:
         return redirect('cadastrar')
@@ -23,7 +24,7 @@ def loginPage(request):
 
         try:
             user = User.objects.get(username=username)
-        except:
+        except User.DoesNotExist:
             messages.error(request, 'Usuário não existe')
 
         user = authenticate(request, username=username, password=password)
@@ -34,8 +35,7 @@ def loginPage(request):
         else:
             messages.error(request, 'Usuário ou senha incorretos')
 
-    context = {'page': 'login'}
-    return render(request, 'base/login.html', context)
+    return render(request, 'base/login.html', {'page': 'login'})
 
 
 def logoutUser(request):
@@ -54,30 +54,25 @@ def cadastrarPage(request):
         if contact_form.is_valid():
             contact = contact_form.save()
 
-            if request.POST.get('emails'):
-                Email.objects.create(contact=contact, email=request.POST.get('emails'))
+            emails = request.POST.getlist('additional_emails') + [request.POST.get('emails')]
+            for email in filter(None, emails):
+                Email.objects.create(contact=contact, email=email)
 
-            if request.POST.get('telephones'):
-                Telephone.objects.create(contact=contact, telephone=request.POST.get('telephones'))
-
-            for email in request.POST.getlist('additional_emails'):
-                if email:
-                    Email.objects.create(contact=contact, email=email)
-
-            for telefone in request.POST.getlist('additional_telephones'):
-                if telefone:
-                    Telephone.objects.create(contact=contact, telephone=telefone)
+            telefones = request.POST.getlist('additional_telephones') + [request.POST.get('telephones')]
+            for telefone in filter(None, telefones):
+                Telephone.objects.create(contact=contact, telephone=telefone)
 
             return redirect('cadastrar')
     else:
         contact_form = ContactForm()
 
-    return render(request, 'base/sidebar.html', {
-        'form': contact_form,
-        'estados': estados,
-        'partidos': partidos,
-        'cargos': cargos
-    })
+        return render(request, 'base/cadastrar.html', {
+            'form': contact_form,
+            'estados': estados,
+            'partidos': partidos,
+            'cargos': cargos
+        })
+
 
 
 def get_municipios(request, estado_id):
@@ -100,37 +95,35 @@ def procurarPage(request):
     busca = request.GET.get('busca')
     page = request.GET.get('page', 1)
 
-    contatos = Contato.objects.none()
+    contatos = Contato.objects.all()
 
-    if any([cargo, estado, municipio, regiao, capital, mais_de_80_mil_hab, regiao_metropolitana, busca]):
-        contatos = Contato.objects.all()
-        if cargo:
-            contatos = contatos.filter(cargo_id=cargo)
-        if estado:
-            contatos = contatos.filter(estado_id=estado)
-        if municipio:
-            contatos = contatos.filter(municipio_id=municipio)
-        if regiao:
-            contatos = contatos.filter(municipio__nome_regiao=regiao)
-        if capital:
-            contatos = contatos.filter(municipio__capital=(capital == "Sim"))
-        if mais_de_80_mil_hab:
-            contatos = contatos.filter(municipio__mais_de_80_mil_hab=(mais_de_80_mil_hab == "Sim"))
-        if regiao_metropolitana:
-            contatos = contatos.filter(municipio__regiao_metropolitana=(regiao_metropolitana == "Sim"))
-        if busca:
-            contatos = contatos.filter(nome__icontains=busca)
+    if cargo:
+        contatos = contatos.filter(cargo_id=cargo)
+    if estado:
+        contatos = contatos.filter(estado_id=estado)
+    if municipio:
+        contatos = contatos.filter(municipio_id=municipio)
+    if regiao:
+        contatos = contatos.filter(municipio__nome_regiao=regiao)
+    if capital:
+        contatos = contatos.filter(municipio__capital=(capital == "Sim"))
+    if mais_de_80_mil_hab:
+        contatos = contatos.filter(municipio__mais_de_80_mil_hab=(mais_de_80_mil_hab == "Sim"))
+    if regiao_metropolitana:
+        contatos = contatos.filter(municipio__regiao_metropolitana=(regiao_metropolitana == "Sim"))
+    if busca:
+        contatos = contatos.filter(nome__icontains=busca)
 
     paginator = Paginator(contatos, 10)
     contatos_paginados = paginator.get_page(page)
 
     context = {
-    'contatos': contatos_paginados,
-    'cargos_disponiveis': Cargo.objects.all(),
-    'estados_disponiveis': Estado.objects.all().order_by('nome'),
-    'municipios_disponiveis': Municipio.objects.all(),
-    'regioes_disponiveis': Municipio.objects.values('nome_regiao').distinct(),
-    'request': request,  # <- ESSENCIAL PARA O TABLE.HTML
+        'contatos': contatos_paginados,
+        'cargos_disponiveis': Cargo.objects.all(),
+        'estados_disponiveis': Estado.objects.all().order_by('nome'),
+        'municipios_disponiveis': Municipio.objects.all(),
+        'regioes_disponiveis': Municipio.objects.values('nome_regiao').distinct(),
+        'request': request,
     }
 
     return render(request, 'base/procurar.html', context)
@@ -143,29 +136,13 @@ def consulta(request, contato_id):
     edit_mode = request.GET.get('edit') == '1' and is_superuser
 
     if request.method == 'POST' and is_superuser:
-        contato.nome = request.POST.get('nome')
-        contato.email = request.POST.get('email')
-        contato.telefone = request.POST.get('telefone')
-        contato.celular = request.POST.get('celular')
-        contato.entidade = request.POST.get('entidade')
-
-        partido_id = request.POST.get('partido')
-        if partido_id:
-            contato.partido = get_object_or_404(Partido, id=partido_id)
-
-        estado_id = request.POST.get('estado')
-        if estado_id:
-            contato.estado = get_object_or_404(Estado, id=estado_id)
-
-        municipio_id = request.POST.get('municipio')
-        if municipio_id:
-            contato.municipio = get_object_or_404(Municipio, id=municipio_id)
-
-        interesses_ids = request.POST.getlist('interesses')
-        contato.interesses.set(interesses_ids)
-
-        contato.save()
-        return redirect('consulta', contato_id=contato.id)
+        form = ContactForm(request.POST, request.FILES, instance=contato)
+        if form.is_valid():
+            contato = form.save()
+            contato.interesses.set(request.POST.getlist('interesses'))
+            return redirect('consulta', contato_id=contato.id)
+    else:
+        form = ContactForm(instance=contato)
 
     estados = Estado.objects.all().order_by('nome')
     municipios = Municipio.objects.filter(estado=contato.estado) if contato.estado else Municipio.objects.none()

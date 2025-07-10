@@ -78,6 +78,7 @@
       html, body {
     height: 100%; /* Garante que o corpo da página ocupe 100% da altura */
     margin: 0; /* Remove margens padrão */
+    padding: 0; /* Remove preenchimento padrão */
         }
 
         .container {

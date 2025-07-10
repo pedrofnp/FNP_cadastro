@@ -12,8 +12,8 @@
   </head>
 
   <body>
-    <!-- Alerta de sucesso -->
-    <div class="container mt-3">
+      <div class="container">
+
       {% if messages %}
         {% for message in messages %}
           <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -22,17 +22,23 @@
           </div>
         {% endfor %}
       {% endif %}
-    </div>
+    
 
-    <div class="container mt-5">
+      <h2 class="mb-4 text-center">Perfil de {{ contato.nome }}</h2>
+      <hr>
+
       <div class="row">
         <!-- Lado esquerdo -->
         <div class="col-md-4 text-center">
-          {% if contato.foto %}
-            <img class="rounded-circle mb-3" width="150px" height="150px" src="{{ contato.foto.url }}" alt="Foto do contato">
-          {% else %}
-            <img class="rounded-circle mb-3" width="150px" height="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg" alt="Foto do contato">
-          {% endif %}
+        {% if contato.foto and contato.foto.name and contato.foto.url %}
+        <img class="rounded-circle mb-3" width="150px" height="150px" src="{{ contato.foto.url }}" alt="Foto do contato">
+        {% else %}
+        <img class="rounded-circle mb-3" width="150px" height="150px" src="https://ui-avatars.com/api/?name={{ contato.nome|urlencode }}&background=random" alt="Foto padrão">
+        {% endif %}
+
+
+
+
 
           <div class="mt-2">
             <span class="badge {% if contato.municipio and contato.municipio.adimplente %}bg-success{% else %}bg-danger{% endif %}">
@@ -141,8 +147,7 @@
               <div class="col-md-6 mb-2"><strong>Telefone:</strong> {{ contato.telefone }}</div>
               <div class="col-md-6 mb-2"><strong>Instituição:</strong> {{ contato.entidade }}</div>
 
-              <div class="col-md-6 mb-2">
-                <strong>Partido:</strong>
+              <div class="col-md-6 mb-2"><strong>Partido:</strong>
                 {% if contato.partido %}
                   {{ contato.partido.nome }}
                 {% else %}
@@ -150,8 +155,7 @@
                 {% endif %}
               </div>
 
-              <div class="col-md-6 mb-2">
-                <strong>Estado:</strong>
+              <div class="col-md-6 mb-2"><strong>Estado:</strong>
                 {% if contato.estado %}
                   {{ contato.estado.nome }}
                 {% else %}
@@ -159,8 +163,7 @@
                 {% endif %}
               </div>
 
-              <div class="col-md-6 mb-2">
-                <strong>Município:</strong>
+              <div class="col-md-6 mb-2"><strong>Município:</strong>
                 {% if contato.municipio %}
                   {{ contato.municipio.nome }}
                 {% else %}
@@ -172,9 +175,8 @@
         </div>
       </div>
     </div>
-  </body>
-</html>
+
     <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'js/dashboard.js' %}"></script>
   </body>
+</html>
