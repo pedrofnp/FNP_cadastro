@@ -1,0 +1,16 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Procurar Contato{% endblock %}
+
+{% block content %}
+<div class="wrap w-100">
+
+  <!-- Filtros -->
+  {% include "base/partials/filters.html" %}
+
+  <!-- Tabela de contatos -->
+  {% include "base/partials/table.html" with request=request %}
+
+</div>
+{% endblock %}

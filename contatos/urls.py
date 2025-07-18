@@ -6,10 +6,10 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 Examples:
 Function views
     1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+    2. Add a URL to urlpatterns:  path('', views.cadastrar, name='cadastrar')
 Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+    1. Add an import:  from other_app.views import CadastrarView
+    2. Add a URL to urlpatterns:  path('', cadastrar.as_view(), name='cadastrar')
 Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
@@ -23,7 +23,7 @@ from base import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('base.urls')), 
-    path('home/', views.home, name='home'),
+    path('cadastrar/', views.cadastrarPage, name='cadastrar'),
 ]+ static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0]) \
   + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

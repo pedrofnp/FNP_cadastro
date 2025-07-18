@@ -1,71 +1,76 @@
 <!-- Filtros -->
-<form method="GET" action="{% url 'dash' %}">
+<form method="GET" action="{% url 'procurar' %}">
   <div class="row my-4">
-      <div class="col-md-3">
-          <select class="form-select" name="cargo">
-              <option value="" {% if not request.GET.cargo %}selected{% endif %}>Todos os Cargos</option>
-              {% for cargo in cargos_disponiveis %}
-                  <option value="{{ cargo.id }}" {% if request.GET.cargo == cargo.id|stringformat:"s" %}selected{% endif %}>{{ cargo.nome }}</option>
-              {% endfor %}
-          </select>
-      </div>
+    <div class="col-md-3 mb-2">
+      <select class="form-select" name="cargo">
+        <option value="" {% if not request.GET.cargo %}selected{% endif %}>Todos os Cargos</option>
+        {% for cargo in cargos_disponiveis %}
+          <option value="{{ cargo.id }}" {% if request.GET.cargo == cargo.id|stringformat:"s" %}selected{% endif %}>{{ cargo.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
 
-      <div class="col-md-3">
-          <select class="form-select" name="estado">
-              <option value="" {% if not request.GET.estado %}selected{% endif %}>Todos os Estados</option>
-              {% for estado in estados_disponiveis %}
-                  <option value="{{ estado.id }}" {% if request.GET.estado == estado.id|stringformat:"s" %}selected{% endif %}>{{ estado.nome }}</option>
-              {% endfor %}
-          </select>
-      </div>
+    <div class="col-md-3 mb-2">
+      <select class="form-select" name="estado">
+        <option value="" {% if not request.GET.estado %}selected{% endif %}>Todos os Estados</option>
+        {% for estado in estados_disponiveis %}
+          <option value="{{ estado.id }}" {% if request.GET.estado == estado.id|stringformat:"s" %}selected{% endif %}>{{ estado.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
 
-      <div class="col-md-3">
-          <select class="form-select" name="municipio">
-              <option value="" {% if not request.GET.municipio %}selected{% endif %}>Todos os Municípios</option>
-              {% for municipio in municipios_disponiveis %}
-                  <option value="{{ municipio.id }}" {% if request.GET.municipio == municipio.id|stringformat:"s" %}selected{% endif %}>{{ municipio.nome }}</option>
-              {% endfor %}
-          </select>
-      </div>
+    <div class="col-md-3 mb-2">
+      <select class="form-select" name="municipio">
+        <option value="" {% if not request.GET.municipio %}selected{% endif %}>Todos os Municípios</option>
+        {% for municipio in municipios_disponiveis %}
+          <option value="{{ municipio.id }}" {% if request.GET.municipio == municipio.id|stringformat:"s" %}selected{% endif %}>{{ municipio.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
 
-      <div class="col-md-3">
-          <select class="form-select" name="regiao">
-              <option value="" {% if not request.GET.regiao %}selected{% endif %}>Todas as Regiões</option>
-              {% for regiao in regioes_disponiveis %}
-                  <option value="{{ regiao.nome_regiao }}" {% if request.GET.regiao == regiao.nome_regiao %}selected{% endif %}>
-                      {{ regiao.nome_regiao }}
-                  </option>
-              {% endfor %}
-          </select>
-      </div>
+    <div class="col-md-3 mb-2">
+      <select class="form-select" name="regiao">
+        <option value="" {% if not request.GET.regiao %}selected{% endif %}>Todas as Regiões</option>
+        {% for regiao in regioes_disponiveis %}
+          <option value="{{ regiao.nome_regiao }}" {% if request.GET.regiao == regiao.nome_regiao %}selected{% endif %}>
+            {{ regiao.nome_regiao }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
 
-      <div class="col-md-3">
-          <select class="form-select" name="capital">
-              <option value="" {% if not request.GET.capital %}selected{% endif %}>Capital</option>
-              <option value="Sim" {% if request.GET.capital == "Sim" %}selected{% endif %}>Sim</option>
-              <option value="Não" {% if request.GET.capital == "Não" %}selected{% endif %}>Não</option>
-          </select>
-      </div>
+    <div class="col-md-3 mb-2">
+      <select class="form-select" name="capital">
+        <option value="" {% if not request.GET.capital %}selected{% endif %}>Capital</option>
+        <option value="Sim" {% if request.GET.capital == "Sim" %}selected{% endif %}>Sim</option>
+        <option value="Não" {% if request.GET.capital == "Não" %}selected{% endif %}>Não</option>
+      </select>
+    </div>
 
-      <div class="col-md-3">
-          <select class="form-select" name="tipo_municipio" multiple>
-              <option value="capitais" {% if request.GET.tipo_municipio == "capitais" %}selected{% endif %}>Capitais</option>
-              <option value="mais_de_80_mil" {% if request.GET.tipo_municipio == "mais_de_80_mil" %}selected{% endif %}>Mais de 80 mil habitantes</option>
-              <option value="menos_de_80_mil" {% if request.GET.tipo_municipio == "menos_de_80_mil" %}selected{% endif %}>Menos de 80 mil habitantes</option>
-          </select>
-      </div>
+    <div class="col-md-3 mb-2">
+      <select class="form-select" name="tipo_municipio">
+        <option value="">Tipo de Município</option>
+        <option value="capitais" {% if request.GET.tipo_municipio == "capitais" %}selected{% endif %}>Capitais</option>
+        <option value="mais_de_80_mil" {% if request.GET.tipo_municipio == "mais_de_80_mil" %}selected{% endif %}>Mais de 80 mil hab.</option>
+        <option value="menos_de_80_mil" {% if request.GET.tipo_municipio == "menos_de_80_mil" %}selected{% endif %}>Menos de 80 mil hab.</option>
+      </select>
+    </div>
 
-      <div class="col-md-3">
-          <select class="form-select" name="regiao_metropolitana">
-              <option value="" {% if not request.GET.regiao_metropolitana %}selected{% endif %}>Região Metropolitana</option>
-              <option value="Sim" {% if request.GET.regiao_metropolitana == "Sim" %}selected{% endif %}>Sim</option>
-              <option value="Não" {% if request.GET.regiao_metropolitana == "Não" %}selected{% endif %}>Não</option>
-          </select>
-      </div>
+    <div class="col-md-3 mb-2">
+      <select class="form-select" name="regiao_metropolitana">
+        <option value="" {% if not request.GET.regiao_metropolitana %}selected{% endif %}>Região Metropolitana</option>
+        <option value="Sim" {% if request.GET.regiao_metropolitana == "Sim" %}selected{% endif %}>Sim</option>
+        <option value="Não" {% if request.GET.regiao_metropolitana == "Não" %}selected{% endif %}>Não</option>
+      </select>
+    </div>
 
-      <div class="col-md-3">
-          <input type="text" class="form-control" name="busca" value="{{ request.GET.busca }}" placeholder="Buscar">
-      </div>
+    <div class="col-md-3 mb-2">
+      <input type="text" class="form-control" name="busca" value="{{ request.GET.busca }}" placeholder="Buscar por nome">
+    </div>
   </div>
-  <button type="submit" class="btn btn-primary">Filtrar</button>
+
+  <div class="d-flex justify-content-start gap-2 mb-3">
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+    <a href="{% url 'procurar' %}" class="btn btn-outline-secondary">Limpar</a>
+  </div>
 </form>
