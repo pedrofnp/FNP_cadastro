@@ -92,6 +92,17 @@
           {% if edit_mode %}
             <form method="POST" enctype="multipart/form-data">
               {% csrf_token %}
+              {% if form.errors %}
+              <div class="alert alert-danger">
+                <strong>Corrija os seguintes erros:</strong>
+                <ul>
+                  {% for field, errors in form.errors.items %}
+                    <li><strong>{{ field }}:</strong> {{ errors|join:", " }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% endif %}
+
               <div class="row">
                 <div class="col-md-6 mb-2"><label>Nome</label><input name="nome" class="form-control" value="{{ contato.nome }}"></div>
 

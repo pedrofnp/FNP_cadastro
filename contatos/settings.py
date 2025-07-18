@@ -1,10 +1,11 @@
 from pathlib import Path
+import os
+import dj_database_url
+from django.contrib import admin
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-3@*$p_)#unt3cn3y5v)$op9nhu(rp%u46*r-@r!lbw%2cbto(#'
-
-DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -50,11 +51,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'contatos.wsgi.application'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default='sqlite:///db.sqlite3',
+        conn_max_age=600
+    )
 }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -71,10 +73,17 @@ USE_TZ = True
 # Static files (CSS, JS, Imagens)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 # Media (uploads)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Permitir hosts no Render
+ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
+
+# Para produção segura
+DEBUG = os.getenv('RENDER') is None

@@ -1,15 +1,2 @@
-echo "*.pyc" >> .gitignore
-echo "__pycache__/" >> .gitignore
-echo "db.sqlite3" >> .gitignore
-git add .gitignore
-git add base/models.py \
-        base/templates/base/procurar.html \
-        base/templates/base/partials/filters.html \
-        base/templates/base/partials/table.html \
-        base/templates/base/profile.html \
-        base/templates/base/sidebar.html \
-        base/urls.py \
-        base/views.py \
-        contatos/urls.py \
-        base/migrations/0032_municipio_adimplente_alter_contato_municipio.py \
-        base/migrations/0033_alter_contato_municipio.py
+# Created by venv; see https://docs.python.org/3/library/venv.html
+*

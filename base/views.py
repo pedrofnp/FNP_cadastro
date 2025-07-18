@@ -6,7 +6,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse
 from .models import Estado, Municipio, Contato, Interesse, Partido, Email, Telephone, Cargo
 from django.core.paginator import Paginator
-from .forms import ContactForm, EmailFormSet, TelephoneFormSet
+from .forms import ContactForm
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 import csv
 import json
 import os
@@ -134,16 +136,22 @@ def consulta(request, contato_id):
     contato = get_object_or_404(Contato, id=contato_id)
     is_superuser = request.user.is_superuser
     edit_mode = request.GET.get('edit') == '1' and is_superuser
-
+    
     if request.method == 'POST' and is_superuser:
         form = ContactForm(request.POST, request.FILES, instance=contato)
         if form.is_valid():
             contato = form.save()
             contato.interesses.set(request.POST.getlist('interesses'))
-            return redirect('consulta', contato_id=contato.id)
+            messages.success(request, 'Alterações salvas com sucesso.')
+            return HttpResponseRedirect(reverse('consulta', args=[contato.id]))
+        else:
+            print("ERROS DO FORMULÁRIO:")
+            print(form.errors) # Apenas mostrar erros, não sobrescreve o form com instance de novo
+            messages.error(request, 'Erro ao salvar alterações. Verifique os dados.')
     else:
         form = ContactForm(instance=contato)
 
+    
     estados = Estado.objects.all().order_by('nome')
     municipios = Municipio.objects.filter(estado=contato.estado) if contato.estado else Municipio.objects.none()
     partidos = Partido.objects.all().order_by('nome')
@@ -152,8 +160,9 @@ def consulta(request, contato_id):
     telefones = Telephone.objects.filter(contact=contato)
     # Verifica se a foto existe fisicamente no disco
     foto_existe = contato.foto and contato.foto.name and contato.foto.storage.exists(contato.foto.name)
+    cargos = Cargo.objects.all()
 
-  
+
     return render(request, 'base/profile.html', {
         'contato': contato,
         'edit_mode': edit_mode,
@@ -165,6 +174,8 @@ def consulta(request, contato_id):
         'emails': emails,
         'telefones': telefones,
         'foto_existe': foto_existe,
+        'cargos': cargos,
+        
     })
 
 
