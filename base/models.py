@@ -1,6 +1,4 @@
 from django.db import models
-from multi_email_field.fields import MultiEmailField
-
 
 class Estado(models.Model):
     nome = models.CharField(max_length=100)
