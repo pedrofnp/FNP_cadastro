@@ -1,3 +1,5 @@
+{% load dict_filters %}
+
 <!-- Resultado da filtragem -->
 <div class="my-3">
   <strong>{{ contatos.paginator.count }}</strong> contatos encontrados
@@ -5,7 +7,7 @@
 
 <!-- Tabela -->
 <div class="table-responsive">
-  <table class="table table-hover">
+  <table class="table table-hover" id="tabela-contatos">
     <thead class="table-light">
       <tr>
         <th>Município</th>
@@ -20,38 +22,50 @@
     </thead>
     <tbody>
       {% for contato in contatos %}
-        <tr>
-          <td>{{ contato.municipio.nome }}</td>
-          <td>{{ contato.nome }}</td>
-          <td>{{ contato.cargo.nome }}</td>
-          <td class="text-center">
-            {% if contato.municipio.adimplente %}
-              ✅
+      <tr data-municipio="{{ contato.municipio.nome }}">
+        <td>{{ contato.municipio.nome }}</td>
+        <td>{{ contato.nome }}</td>
+        <td>{{ contato.cargo.nome }}</td>
+
+        <!-- Célula de status adimplente com base no dicionário passado pela view -->
+        <td class="text-center">
+          {% with municipio_status=status_municipios|dict_get:contato.municipio.nome %}
+            {% if municipio_status %}
+              {% if municipio_status.adimplente %}
+                ✅
+              {% else %}
+                ❌
+              {% endif %}
             {% else %}
-              ❌
+              ⚠️
             {% endif %}
-          </td>
-          <td class="text-center">
-            <a href="{% url 'consulta' contato.id %}" title="Ver detalhes">
-              <i class="bi bi-info-circle-fill"></i>
-            </a>
-          </td>
-          {% if request.user.is_superuser %}
-          <td class="text-center">
-            <a href="{% url 'consulta' contato.id %}?edit=1" title="Editar">
-              <i class="bi bi-pencil-fill"></i>
-            </a>
-          </td>
-          {% endif %}
-        </tr>
+          {% endwith %}
+        </td>
+
+
+        <td class="text-center">
+          <a href="{% url 'consulta' contato.id %}" title="Ver detalhes">
+            <i class="bi bi-info-circle-fill"></i>
+          </a>
+        </td>
+        {% if request.user.is_superuser %}
+        <td class="text-center">
+          <a href="{% url 'consulta' contato.id %}?edit=1" title="Editar">
+            <i class="bi bi-pencil-fill"></i>
+          </a>
+        </td>
+        {% endif %}
+      </tr>
       {% empty %}
-        <tr>
-          <td colspan="6" class="text-center">Nenhum contato encontrado.</td>
-        </tr>
+      <tr>
+        <td colspan="6" class="text-center">Nenhum contato encontrado.</td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+
+<!-- Usuário logado -->
 <p>Usuário: {{ request.user.username }} | Superuser: {{ request.user.is_superuser }}</p>
 
 <!-- Paginação -->
@@ -81,5 +95,8 @@
         <a class="page-link" href="?page={{ contatos.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Próxima</a>
       </li>
       <li class="page-item">
-        <a class="page-link" href="?page={{ contatos.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Últim_
+        <a class="page-link" href="?page={{ contatos.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Última</a>
+      </li>
     {% endif %}
+  </ul>
+</nav>

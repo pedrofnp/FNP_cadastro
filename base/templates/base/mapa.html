@@ -1,59 +1,47 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Mapa das Regiões do Brasil</title>
-    <script src="https://code.highcharts.com/maps/highmaps.js"></script>
-    <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
-    <style>
-        #container {
-            height: 600px;
-            width: 800px;
-            margin: auto;
-        }
-    </style>
-</head>
-<body>
-    <div id="container"></div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // GeoJSON e dados passados do Django
-            const mapaBrasil = JSON.parse('{{ mapa_brasil|safe }}');
-            const dadosRegioes = JSON.parse('{{ dados_regioes|safe }}');
-            
-            // Configuração do Highcharts
-            Highcharts.mapChart('container', {
-                chart: {
-                    map: mapaBrasil
-                },
-                title: {
-                    text: 'Mapa das Regiões do Brasil'
-                },
-                colorAxis: {
-                    minColor: '#E6E7E8',
-                    maxColor: '#005645'
-                },
-                series: [{
-                    data: dadosRegioes.map(d => ({
-                        'NOME1': d.nome,  // Usar o campo correto para correspondência
-                        'value': d.valor,
-                        'name': d.nome
-                    })),
-                    mapData: mapaBrasil,
-                    joinBy: ['NOME1', 'NOME1'],  // Referenciar corretamente o campo no GeoJSON
-                    name: 'Valores das Regiões',
-                    states: {
-                        hover: {
-                            color: '#BADA55'
-                        }
-                    },
-                    dataLabels: {
-                        enabled: true,
-                        format: '{point.name}: {point.value}'
-                    }
-                }]
-            });
-        });
-    </script>
-</body>
-</html>
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- CSS externos -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<!-- Título e container -->
+<div class="container mt-4">
+  <h3 class="mb-4">Mapa de Municípios</h3>
+
+  <!-- Select com busca -->
+  <div class="mb-4">
+    <select name="municipio_id" id="municipio_id" class="form-select">
+      <option value="">Selecione um município</option>
+      {% for municipio in municipios %}
+        <option value="{{ municipio.municipio|upper }}">{{ municipio.municipio|title }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <!-- Mapa -->
+  <div id="mapa" style="height: 400px;" class="mb-3 rounded shadow"></div>
+
+  <!-- Status e dados -->
+  <div id="status_adimplencia" class="h5 text-center mb-3"></div>
+  <div id="dados_municipio" class="border p-3 rounded bg-light"></div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Ativa Select2 -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    $('#municipio_id').select2({
+      placeholder: 'Selecione um município',
+      width: '100%'
+    });
+  });
+</script>
+
+{% endblock %}
