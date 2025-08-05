@@ -1,0 +1,61 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<div class="container mt-4">
+  <h3 class="mb-4">Editar Município</h3>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Formulário para seleção do município -->
+  <form method="get" class="mb-4">
+    <div class="row g-3 align-items-center">
+      <div class="col-auto">
+        <label for="municipio_nome" class="col-form-label">Selecione o Município:</label>
+      </div>
+      <div class="col-auto">
+        <select name="municipio_nome" id="municipio_nome" class="form-select" onchange="this.form.submit()">
+          <option value="">-- Escolha --</option>
+          {% for municipio in municipios %}
+            <option value="{{ municipio.municipio }}" {% if municipio_selecionado and municipio_selecionado.municipio == municipio.municipio %}selected{% endif %}>{{ municipio.municipio }} - {{ municipio.uf }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  </form>
+
+  {% if municipio_selecionado %}
+    <div class="border p-3 rounded bg-light">
+      <p><strong>Município:</strong> {{ municipio_selecionado.municipio }}</p>
+      <p><strong>UF:</strong> {{ municipio_selecionado.uf }}</p>
+      <p><strong>População:</strong> {{ municipio_selecionado.populacao }}</p>
+      <p><strong>Status de Adimplência:</strong>
+        {% if municipio_selecionado.adimplente %}
+          <span class="text-success fw-bold">Adimplente</span>
+        {% else %}
+          <span class="text-danger fw-bold">Inadimplente</span>
+        {% endif %}
+      </p>
+    </div>
+  {% endif %}
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{% static 'js/editar_municipio.js' %}"></script>
+<script>
+  $(document).ready(function() {
+    $('#municipio_nome').select2({
+      width: '250px',
+      placeholder: "Selecione um município",
+      allowClear: true
+    });
+  });
+</script>
+
+{% endblock %}

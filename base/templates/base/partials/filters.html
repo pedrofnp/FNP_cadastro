@@ -20,12 +20,13 @@
     </div>
 
     <div class="col-md-3 mb-2">
-      <select class="form-select" name="municipio">
-        <option value="" {% if not request.GET.municipio %}selected{% endif %}>Todos os Municípios</option>
-        {% for municipio in municipios_disponiveis %}
-          <option value="{{ municipio.id }}" {% if request.GET.municipio == municipio.id|stringformat:"s" %}selected{% endif %}>{{ municipio.nome }}</option>
+      <select name="municipio" id="municipio" class="form-select">
+        <option value="">Selecione o Município</option>
+        {% for m in municipios_disponiveis %}
+        <option value="{{ m.municipio }}">{{ m.municipio }}</option>
         {% endfor %}
       </select>
+
     </div>
 
     <div class="col-md-3 mb-2">
