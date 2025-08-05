@@ -15,6 +15,7 @@ from django.urls import reverse
 from django.views import View
 from .models import Estado, Contato, Interesse, Partido, Email, Telephone, Cargo
 from .forms import ContactForm
+from base.adimplencia import verificar_adimplente
 
 
 # ======================================
@@ -88,10 +89,29 @@ def mapaPage(request):
 # ======================================
 def municipio_info_api(request, nome_municipio):
     try:
+        # Busca dados com a lógica API + JSON local
         dados = consultar_status_municipio(nome_municipio)
+
+        # Garante que participação seja carregada do JSON local
+        try:
+            dados_json = carregar_dados_json()
+            municipio_local = next(
+                (m for m in dados_json if m["municipio"].strip().upper() == nome_municipio.strip().upper()),
+                None
+            )
+            if municipio_local and "participacao" in municipio_local:
+                dados["participacao"] = municipio_local["participacao"]
+            else:
+                dados["participacao"] = ""  # Caso não exista no JSON
+        except Exception as e:
+            print(f"[ERRO PARTICIPACAO] {e}")
+            dados["participacao"] = ""
+
         return JsonResponse(dados)
+
     except Exception as e:
         return JsonResponse({"erro": str(e)}, status=500)
+
 
 
 # ======================================
@@ -157,9 +177,7 @@ def cadastrarPage(request):
     })
 
 
-# ======================================
-# PÁGINA DE BUSCA (ATUALIZADA)
-# ======================================
+# PÁGINA DE BUSCA
 @login_required(login_url='login')
 def procurarPage(request):
     cargo = request.GET.get('cargo')
@@ -195,12 +213,28 @@ def procurarPage(request):
         'request': request,
     }
 
+    # Extrai nomes únicos de municípios da página atual
+    municipios_unicos = {
+    contato.municipio.nome.strip()
+    for contato in contatos_paginados
+    }
+
+    print("Municípios únicos encontrados na página atual:")
+    for m in municipios_unicos:
+        print("→", m)
+
+    # Monta o dicionário com status adimplente
+    status_municipios = {}
+    for municipio in municipios_unicos:
+        adimplente = verificar_adimplente(municipio)
+        print(f"Verificando: {municipio} → Adimplente: {adimplente}")
+        status_municipios[municipio] = {"adimplente": adimplente}
+
+    context['status_municipios'] = status_municipios
     return render(request, 'base/procurar.html', context)
 
 
-# ======================================
 # CONSULTA PERFIL
-# ======================================
 @login_required(login_url='login')
 def consulta(request, contato_id):
     contato = get_object_or_404(Contato, id=contato_id)
@@ -244,9 +278,7 @@ def consulta(request, contato_id):
     })
 
 
-# ======================================
 # API LISTAGEM DE MUNICÍPIOS
-# ======================================
 def get_municipios(request, estado_id=None):
     municipios = carregar_dados_json()
     if estado_id:
@@ -258,9 +290,7 @@ def get_municipios(request, estado_id=None):
     return JsonResponse({'municipios': municipios}, safe=False)
 
 
-# ======================================
 # EDITAR MUNICÍPIO
-# ======================================
 @login_required(login_url='login')
 def editar_municipio(request):
     municipios_data = carregar_dados_json()
@@ -297,9 +327,7 @@ def editar_municipio(request):
     })
 
 
-# ======================================
 # EXPORTAÇÃO
-# ======================================
 @login_required(login_url='login')
 def exportar_estados_csv(request):
     response = HttpResponse(content_type='text/csv')
@@ -331,3 +359,62 @@ def exportar_partidos_csv(request):
     for partido in Partido.objects.all():
         writer.writerow([partido.id, partido.nome])
     return response
+
+@login_required(login_url='login')
+def mapa_municipioPage(request):
+    """Página unificada de Mapa + Edição de Município"""
+    municipios = carregar_dados_json()
+    return render(request, 'base/mapa_municipio.html', {'municipios': municipios})
+
+
+@login_required(login_url='login')
+def editar_municipio_ajax(request):
+    if request.method != 'POST':
+        return JsonResponse({'erro': 'Método não permitido'}, status=405)
+
+    nome_municipio = request.POST.get('municipio')
+    participacoes_str = request.POST.get('participacao')  # Vem como JSON string do JS
+
+    if not nome_municipio:
+        return JsonResponse({'erro': 'Município não informado'}, status=400)
+
+    try:
+        municipios_data = carregar_dados_json()
+        municipio = next(
+            (m for m in municipios_data if m['municipio'].strip().upper() == nome_municipio.strip().upper()),
+            None
+        )
+
+        if not municipio:
+            return JsonResponse({'erro': 'Município não encontrado'}, status=404)
+
+        # Converte a string JSON recebida em lista Python
+        try:
+            participacoes_lista = json.loads(participacoes_str) if participacoes_str else []
+            if not isinstance(participacoes_lista, list):
+                participacoes_lista = []
+        except json.JSONDecodeError:
+            participacoes_lista = []
+
+        # Atualiza no município
+        municipio["participacao"] = participacoes_lista
+
+        # Salva no JSON local
+        path = os.path.join(settings.BASE_DIR, 'static', 'data', 'db_sqmunicipio.json')
+        if not os.path.exists(path):
+            path = os.path.join(settings.BASE_DIR, 'base', 'db_sqmunicipio.json')
+
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(municipios_data, f, ensure_ascii=False, indent=2)
+
+        # Retorna os dados atualizados
+        return JsonResponse({
+            'municipio': municipio['municipio'],
+            'uf': municipio['uf'],
+            'populacao': municipio['populacao'],
+            'adimplente': municipio.get('adimplente', False),
+            'participacao': municipio['participacao']
+        })
+
+    except Exception as e:
+        return JsonResponse({'erro': str(e)}, status=500)

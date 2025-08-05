@@ -28,20 +28,17 @@
         <td>{{ contato.cargo.nome }}</td>
 
         <!-- Célula de status adimplente com base no dicionário passado pela view -->
-        <td class="text-center">
-          {% with municipio_status=status_municipios|dict_get:contato.municipio.nome %}
-            {% if municipio_status %}
-              {% if municipio_status.adimplente %}
-                ✅
-              {% else %}
-                ❌
-              {% endif %}
+      <td class="text-center">
+        {% with chave=contato.municipio.nome|stringformat:"s"|add:" - "|add:contato.municipio.estado.nome %}
+          {% with status=status_municipios|dict_get:chave %}
+            {% if status.adimplente %}
+              ✅
             {% else %}
-              ⚠️
+              ❌
             {% endif %}
           {% endwith %}
-        </td>
-
+        {% endwith %}
+      </td>
 
         <td class="text-center">
           <a href="{% url 'consulta' contato.id %}" title="Ver detalhes">

@@ -27847,6 +27847,10 @@
   {
     "municipio": "BRASILIA",
     "uf": "DF",
-    "populacao": 2982818
+    "populacao": 2982818,
+    "participacao": [
+      "Mobilidade",
+      "Dados"
+    ]
   }
 ]
