@@ -2,7 +2,10 @@
   {
     "municipio": "ALTA FLORESTA D'OESTE",
     "uf": "RO",
-    "populacao": 22853
+    "populacao": 22853,
+    "participacao": [
+      "Esporte"
+    ]
   },
   {
     "municipio": "ARIQUEMES",
