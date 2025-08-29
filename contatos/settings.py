@@ -1,13 +1,19 @@
 from pathlib import Path
 import os
 import dj_database_url
-from django.contrib import admin
+from decouple import config  # 👈 Nova importação
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-3@*$p_)#unt3cn3y5v)$op9nhu(rp%u46*r-@r!lbw%2cbto(#'
+# 🔒 Configurações seguras com variáveis de ambiente
+SECRET_KEY = config('DJANGO_SECRET_KEY', default='6adf3c7f669aa66ca92b9d27d496c6a9')
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+# 🌐 Hosts permitidos
+ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -51,13 +57,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'contatos.wsgi.application'
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',
-        conn_max_age=600
-    )
-}
-
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
