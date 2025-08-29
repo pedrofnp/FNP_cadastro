@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 import dj_database_url
-from decouple import config  # 👈 Nova importação
+from decouple import config 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -57,20 +57,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'contatos.wsgi.application'
 
-if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600
-        )
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+DATABASES = {
+    'default': dj_database_url.config(
+        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
+        conn_max_age=600
+    )
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
